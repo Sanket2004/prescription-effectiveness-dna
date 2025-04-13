@@ -23,7 +23,7 @@ import {
   CardTitle,
   CardDescription,
 } from "../components/ui/card";
-import { LinkIcon } from "lucide-react";
+import { InfoIcon, LinkIcon } from "lucide-react";
 import { Link } from "react-router-dom";
 import SubjectSelect from "../components/global/subjectSelect";
 
@@ -45,7 +45,12 @@ function HomePage() {
     fetchLowAdherenceSummary();
   }, [fetchSubjects, fetchSubjectsBelowThreshold, fetchLowAdherenceSummary]);
 
-  if (loading) return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
+  if (loading)
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        Loading...
+      </div>
+    );
   if (error) return <div>Error: {error}</div>;
 
   const totalSubjects = subjects.length;
@@ -59,10 +64,13 @@ function HomePage() {
   ];
 
   // Filtered Data for Bar Chart (only below threshold subjects)
-  const barData = belowThresholdSubjects.map((subject, index) => ({
-    name: subject.subject_id, // Fallback to index if id is unavailable
-    adherenceScore: subject.avg_score || 0, // Ensure adherenceScore exists
-  }));
+  // Limit to top 10 records
+  const barData = belowThresholdSubjects
+    .slice(0, 10) // Take only the first 10 entries
+    .map((subject) => ({
+      name: subject.subject_id,
+      adherenceScore: subject.avg_score || 0,
+    }));
 
   // Colors for Pie Chart
   const COLORS = ["hsl(var(--primary))", "hsl(var(--muted-foreground))"];
@@ -70,13 +78,21 @@ function HomePage() {
   // Data for team members
   const teamMembers = [
     { name: "Abhishek Mukherjee", role: "Project Manager" },
-    { name: "Soumili Dey", role: "Team Member", link: import.meta.env.VITE_SOUMILI_GITHUB_LINK },
+    {
+      name: "Soumili Dey",
+      role: "Team Member",
+      link: import.meta.env.VITE_SOUMILI_GITHUB_LINK,
+    },
     {
       name: "Sanket Banerjee",
       role: "Team Member",
       link: import.meta.env.VITE_SANKET_GITHUB_LINK,
     },
-    { name: "Santanu Pal", role: "Team Member", link: import.meta.env.VITE_SANTANU_GITHUB_LINK},
+    {
+      name: "Santanu Pal",
+      role: "Team Member",
+      link: import.meta.env.VITE_SANTANU_GITHUB_LINK,
+    },
   ];
 
   //// Data for Line Chart of Age Group
@@ -232,6 +248,7 @@ function HomePage() {
                   textAnchor="end"
                   interval={0}
                   height={60}
+                  fontSize={13}
                 />
                 <YAxis
                   label={{
@@ -249,8 +266,9 @@ function HomePage() {
               </LineChart>
             </ResponsiveContainer>
           </CardContent>
-          <CardFooter className="text-center flex items-center justify-center text-sm">
-            Displaying adherence scores for all subjects below threshold
+          <CardFooter className="inline-flex justify-center items-center gap-2 text-sm">
+            <InfoIcon size={16} cla />
+            Limit of 10 subjects having poor adherence
           </CardFooter>
         </Card>
       </div>
