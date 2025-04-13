@@ -95,7 +95,7 @@ function HomePage() {
     <section className="container p-6 space-y-6 mx-auto">
       <div className="max-w-xl mx-auto px-4 py-8 min-h-[50vh]">
         <h2 className="text-4xl font-black tracking-tight mb-4 text-center text-transparent bg-clip-text bg-gradient-to-r from-primary to-gray-500 font-mono">
-          Prescription Effectiveness and Reginal Trend Analysis
+          Prescription Effectiveness and Regional Trend Analysis
         </h2>
         <p className="text-lg text-muted-foreground text-center">
           Analyze prescription effectiveness and regional trend data to gain a

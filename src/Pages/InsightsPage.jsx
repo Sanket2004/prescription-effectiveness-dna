@@ -73,7 +73,7 @@ export default function InsightsPage() {
       </Button>
       <div className="max-w-xl mx-auto px-4 py-8">
         <h2 className="text-4xl font-black tracking-tight mb-4 text-center text-transparent bg-clip-text bg-gradient-to-r from-primary to-gray-500 font-mono">
-          Prescription Effectiveness and Reginal Trend Analysis
+          Prescription Effectiveness and Regional Trend Analysis
         </h2>
         <p className="relative text-lg font-bold font-mono text-primary flex items-center justify-center mx-auto group overflow-hidden w-max p-2">
           <span className="relative z-10 font-mono flex gap-2 items-center justify-center">
