@@ -45,7 +45,7 @@ function HomePage() {
     fetchLowAdherenceSummary();
   }, [fetchSubjects, fetchSubjectsBelowThreshold, fetchLowAdherenceSummary]);
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
   if (error) return <div>Error: {error}</div>;
 
   const totalSubjects = subjects.length;

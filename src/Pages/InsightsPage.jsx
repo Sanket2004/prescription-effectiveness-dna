@@ -55,7 +55,12 @@ export default function InsightsPage() {
     }
   }, [subjectData]);
 
-  if (!subjectData || !subjectData.summary) return <div>Loading...</div>;
+  if (!subjectData || !subjectData.summary)
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        Loading...
+      </div>
+    );
 
   return (
     <section className="p-6 container mx-auto space-y-6 relative">
