@@ -1,6 +1,8 @@
 import { create } from "zustand";
 import axios from "axios";
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 const useStore = create((set) => ({
   subjects: [],
   subjectData: {},
@@ -13,7 +15,7 @@ const useStore = create((set) => ({
   fetchSubjects: async () => {
     set({ loading: true });
     try {
-      const response = await axios.get("http://localhost:5000/api/subjects");
+      const response = await axios.get(`${API_URL}/subjects`);
       set({ subjects: response.data || [], loading: false });
     } catch (error) {
       console.error("Fetch subjects error:", error);
@@ -25,9 +27,7 @@ const useStore = create((set) => ({
   fetchSubjectData: async (subject_id) => {
     set({ loading: true });
     try {
-      const response = await axios.get(
-        `http://localhost:5000/api/subject/${subject_id}`
-      );
+      const response = await axios.get(`${API_URL}/subject/${subject_id}`);
       set({ subjectData: response.data || {}, loading: false });
     } catch (error) {
       console.error("Fetch subject data error:", error);
@@ -39,9 +39,7 @@ const useStore = create((set) => ({
   fetchLowAdherenceSummary: async () => {
     set({ loading: true });
     try {
-      const response = await axios.get(
-        "http://localhost:5000/api/low-adherence-summary"
-      );
+      const response = await axios.get(`${API_URL}/low-adherence-summary`);
       set({ lowAdherenceSummary: response.data || [], loading: false });
     } catch (error) {
       console.error("Fetch summary error:", error);
@@ -52,9 +50,7 @@ const useStore = create((set) => ({
   fetchSubjectsBelowThreshold: async () => {
     set({ loading: true });
     try {
-      const response = await axios.get(
-        "http://localhost:5000/api/below-threshold"
-      );
+      const response = await axios.get(`${API_URL}/below-threshold`);
       set({ belowThresholdSubjects: response.data || [], loading: false });
     } catch (error) {
       console.error("Fetch summary error:", error);
