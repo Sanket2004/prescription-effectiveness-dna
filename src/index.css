@@ -8,6 +8,7 @@
   body {
     @apply font-sans;
   }
+
   :root {
     --background: 0 0% 100%;
 
@@ -116,5 +117,17 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+@layer utilities {
+  .scrollbar::-webkit-scrollbar {
+    @apply w-2;
+  }
+  .scrollbar::-webkit-scrollbar-track {
+    @apply bg-transparent;
+  }
+  .scrollbar::-webkit-scrollbar-thumb {
+    @apply bg-muted-foreground rounded-full;
   }
 }

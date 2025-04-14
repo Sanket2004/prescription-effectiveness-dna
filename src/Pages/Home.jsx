@@ -1,3 +1,5 @@
+"use client";
+
 import { useEffect } from "react";
 import useStore from "../stores/store";
 import {
@@ -23,9 +25,17 @@ import {
   CardTitle,
   CardDescription,
 } from "../components/ui/card";
-import { InfoIcon, LinkIcon } from "lucide-react";
+import {
+  InfoIcon,
+  LinkIcon,
+  Users,
+  TrendingDown,
+  Activity,
+} from "lucide-react";
 import { Link } from "react-router-dom";
 import SubjectSelect from "../components/global/subjectSelect";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Separator } from "@/components/ui/separator";
 
 function HomePage() {
   const {
@@ -45,17 +55,53 @@ function HomePage() {
     fetchLowAdherenceSummary();
   }, [fetchSubjects, fetchSubjectsBelowThreshold, fetchLowAdherenceSummary]);
 
-  if (loading)
+  if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        Loading...
+      <div className="container p-6 space-y-6 mx-auto">
+        <div className="px-4 py-8">
+          <Skeleton className="h-12 w-3/4 mx-auto mb-4" />
+          <Skeleton className="h-6 w-1/2 mx-auto mb-2" />
+          <Skeleton className="h-6 w-2/3 mx-auto mb-8" />
+          <Skeleton className="h-10 w-64 mx-auto" />
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {[1, 2, 3].map((i) => (
+            <Card key={i} className="overflow-hidden">
+              <CardHeader>
+                <Skeleton className="h-6 w-3/4 mb-2" />
+                <Skeleton className="h-4 w-1/2" />
+              </CardHeader>
+              <CardContent>
+                <Skeleton className="h-[300px] w-full rounded-md" />
+              </CardContent>
+              <CardFooter>
+                <Skeleton className="h-4 w-full" />
+              </CardFooter>
+            </Card>
+          ))}
+        </div>
       </div>
     );
-  if (error) return <div>Error: {error}</div>;
+  }
+
+  if (error)
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[50vh] p-6">
+        <div className="text-destructive text-xl mb-4">Error loading data</div>
+        <div className="bg-destructive/10 p-4 rounded-lg max-w-md">
+          <p className="text-destructive-foreground">{error}</p>
+        </div>
+      </div>
+    );
 
   const totalSubjects = subjects.length;
   const belowThresholdCount = belowThresholdSubjects.length;
   const aboveThresholdCount = totalSubjects - belowThresholdCount;
+  const adherenceRate =
+    totalSubjects > 0
+      ? Math.round((aboveThresholdCount / totalSubjects) * 100)
+      : 0;
 
   // Data for Pie Chart
   const pieData = [
@@ -63,17 +109,15 @@ function HomePage() {
     { name: "Below Threshold", value: belowThresholdCount },
   ];
 
-  // Filtered Data for Bar Chart (only below threshold subjects)
+  // Filtered Data for Line Chart (only below threshold subjects)
   // Limit to top 10 records
-  const barData = belowThresholdSubjects
-    .slice(0, 10) // Take only the first 10 entries
-    .map((subject) => ({
-      name: subject.subject_id,
-      adherenceScore: subject.avg_score || 0,
-    }));
+  const lineData = belowThresholdSubjects.slice(0, 10).map((subject) => ({
+    name: subject.subject_id,
+    adherenceScore: subject.avg_score || 0,
+  }));
 
   // Colors for Pie Chart
-  const COLORS = ["hsl(var(--primary))", "hsl(var(--muted-foreground))"];
+  const COLORS = ["hsl(var(--chart-1))", "hsl(var(--chart-2))"];
 
   // Data for team members
   const teamMembers = [
@@ -95,7 +139,7 @@ function HomePage() {
     },
   ];
 
-  //// Data for Line Chart of Age Group
+  // Data for Bar Chart of Age Group
   const groupedData = [];
 
   lowAdherenceSummary.forEach(({ age_group, gender, count }) => {
@@ -108,169 +152,337 @@ function HomePage() {
   });
 
   return (
-    <section className="container p-6 space-y-6 mx-auto">
-      <div className="max-w-xl mx-auto px-4 py-8 min-h-[50vh]">
-        <h2 className="text-4xl font-black tracking-tight mb-4 text-center text-transparent bg-clip-text bg-gradient-to-r from-primary to-gray-500 font-mono">
-          Prescription Effectiveness and Regional Trend Analysis
-        </h2>
-        <p className="text-lg text-muted-foreground text-center">
-          Analyze prescription effectiveness and regional trend data to gain a
-          deep understanding of the impact of medications on patients.
-        </p>
-        <p className="text-lg text-muted-foreground text-center mt-8 gap-2 flex items-center justify-center flex-wrap">
-          created by{" "}
-          {teamMembers.map(
-            (member, index) =>
-              member.role === "Team Member" && (
+    <section className="container p-6 space-y-10 mx-auto">
+      {/* Header Section */}
+      <div className="px-4 py-8 bg-gradient-to-b from-background to-muted/30 rounded-2xl shadow-sm">
+        <h1 className="text-4xl font-black tracking-tight mb-6 text-center max-w-screen-lg mx-auto font-mono">
+          Prescription Effectiveness Dashboard
+        </h1>
+
+        <div className="max-w-2xl mx-auto space-y-6">
+          <div>
+            <p className="text-lg text-muted-foreground  text-center leading-relaxed">
+              Analyze prescription effectiveness and regional trend data to gain
+              insights into medication impact on patient outcomes.
+            </p>
+          </div>
+
+          <Separator />
+
+          <div className="pb-2">
+            <h3 className="text-center text-sm font-medium text-muted-foreground mb-3">
+              Research Team
+            </h3>
+            <div className="flex flex-wrap items-center justify-center gap-2">
+              {teamMembers.map((member, index) => (
                 <Link
                   key={index}
-                  to={member.link && member.link}
-                  className="inline-flex items-center justify-center gap-1 text-primary font-mono tracking-tight hover:font-semibold transition-all"
+                  to={member.link || "#"}
+                  className="inline-flex items-center px-3 py-1 rounded-lg bg-primary/5 text-primary hover:bg-primary/10 transition-all"
                   target="_blank"
                 >
-                  <LinkIcon size={15} />
-                  {member.name}
-                  {index < teamMembers.length - 1 && ", "}
+                  <LinkIcon size={14} className="mr-1.5" />
+                  <span className="font-medium text-sm font-mono tracking-tight">{member.name}</span>
+                  <span className="ml-1.5 text-xs text-primary font-mono font-black tracking-tight">
+                    {member.role === "Project Manager" ? "PM" : ""}
+                  </span>
                 </Link>
-              )
-          )}
-        </p>
+              ))}
+            </div>
+          </div>
 
-        <SubjectSelect />
+          <Separator />
+
+          <div className="pb-2">
+            <h3 className="text-center font-bold text-primary mb-3 font-mono tracking-tight">
+              Select a subject for detailed insights
+            </h3>
+            <SubjectSelect />
+          </div>
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-y-6 md:gap-x-6 pb-12">
-        {/* Existing Pie Chart Card */}
-        <Card className="text-center col-span-1">
-          <CardHeader>
-            <CardTitle>Total Subjects</CardTitle>
-            <CardDescription>Based on the latest data</CardDescription>
+      {/* Summary Stats */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <Card className="bg-gradient-to-br from-white to-primary-foreground shadow-md">
+          <CardHeader className="pb-2">
+            <CardTitle className="flex items-center text-primary ">
+              <Users className="mr-2 h-5 w-5" />
+              Total Subjects
+            </CardTitle>
           </CardHeader>
           <CardContent>
-            <ResponsiveContainer width="100%" height={300}>
-              <PieChart>
-                <Pie
-                  data={pieData}
-                  dataKey="value"
-                  nameKey="name"
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={60}
-                  outerRadius={100}
-                  stroke="#fff"
-                  strokeWidth={1}
-                  label
-                >
-                  {pieData.map((entry, index) => (
-                    <Cell key={index} fill={COLORS[index % COLORS.length]} />
-                  ))}
-                </Pie>
-                <Tooltip />
-                <Legend />
-                <text
-                  x="50%"
-                  y="45%"
-                  textAnchor="middle"
-                  fill="black"
-                  fontSize="2rem"
-                  fontWeight="bold"
-                >
-                  {totalSubjects.toLocaleString()}
-                </text>
-                <text
-                  x="50%"
-                  y="55%"
-                  textAnchor="middle"
-                  fill="gray"
-                  fontSize="0.9rem"
-                >
-                  Subjects
-                </text>
-              </PieChart>
-            </ResponsiveContainer>
+            <div className="text-4xl font-bold font-mono">
+              {totalSubjects.toLocaleString()}
+            </div>
+            <p className="text-sm text-muted-foreground  mt-1">
+              Enrolled in the study
+            </p>
           </CardContent>
-          <CardFooter className="text-center flex items-center justify-center text-sm">
-            Showing total subjects having poor adherence
-          </CardFooter>
         </Card>
 
-        {/* lowAdherenceSummary */}
-        <Card className="text-center col-span-1">
-          <CardHeader>
-            <CardTitle>Total Subjects Grouped by Age Group</CardTitle>
-            <CardDescription>Based on the latest data</CardDescription>
+        <Card className="bg-gradient-to-br from-white to-primary-foreground  shadow-md">
+          <CardHeader className="pb-2">
+            <CardTitle className="flex items-center text-primary ">
+              <TrendingDown className="mr-2 h-5 w-5" />
+              Below Threshold
+            </CardTitle>
           </CardHeader>
           <CardContent>
-            <ResponsiveContainer width="100%" height={300}>
-              <BarChart
-                data={groupedData}
-                margin={{ top: 20, right: 30, left: 10, bottom: 5 }}
-              >
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="age_group" />
-                <YAxis
-                  label={{ value: "Count", angle: -90, position: "insideLeft" }}
-                />
-                <Tooltip />
-                <Legend />
-                <Bar dataKey="F" fill="hsl(var(--primary))" name="Female" />
-                <Bar
-                  dataKey="M"
-                  fill="hsl(var(--muted-foreground))"
-                  name="Male"
-                />
-              </BarChart>
-            </ResponsiveContainer>
+            <div className="text-4xl font-bold font-mono">
+              {belowThresholdCount.toLocaleString()}
+            </div>
+            <p className="text-sm text-muted-foreground  mt-1">
+              Subjects with adherence score &lt; 7
+            </p>
           </CardContent>
-          <CardFooter className="text-center flex items-center justify-center text-sm">
-            Showing total subjects having poor adherence
-          </CardFooter>
         </Card>
 
-        {/* New Bar Chart Card for Below Threshold Subjects */}
-        <Card className="text-center col-span-1">
-          <CardHeader>
-            <CardTitle>Adherence Scores of Subjects Below Threshold</CardTitle>
-            <CardDescription>
-              Adherence scores for subjects below the threshold
-            </CardDescription>
+        <Card className="bg-gradient-to-br from-white to-primary-foreground   shadow-md">
+          <CardHeader className="pb-2">
+            <CardTitle className="flex items-center text-primary ">
+              <Activity className="mr-2 h-5 w-5" />
+              Adherence Rate
+            </CardTitle>
           </CardHeader>
           <CardContent>
-            <ResponsiveContainer width="100%" height={300}>
-              <LineChart
-                data={barData}
-                margin={{ top: 20, right: 10, left: 10, bottom: 0 }}
-              >
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis
-                  dataKey="name"
-                  angle={-45}
-                  textAnchor="end"
-                  interval={0}
-                  height={60}
-                  fontSize={13}
-                />
-                <YAxis
-                  label={{
-                    value: "Adherence Score",
-                    angle: -90,
-                    position: "insideLeft",
-                  }}
-                />
-                <Tooltip />
-                <Line
-                  type={"linear"}
-                  dataKey="adherenceScore"
-                  stroke="hsl(var(--primary))"
-                />
-              </LineChart>
-            </ResponsiveContainer>
+            <div className="text-4xl font-bold font-mono">
+              {adherenceRate}%
+            </div>
+            <p className="text-sm text-muted-foreground  mt-1">
+              Subjects meeting adherence threshold
+            </p>
           </CardContent>
-          <CardFooter className="inline-flex justify-center items-center gap-2 text-sm">
-            <InfoIcon size={16} cla />
-            Limit of 10 subjects having poor adherence
-          </CardFooter>
         </Card>
+      </div>
+
+      {/* Data Visualization Section */}
+      <div>
+        <h2 className="mb-8 text-center text-2xl font-black text-primary font-mono tracking-tight ">
+          Detailed Analysis
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-12">
+          {/* Pie Chart Card */}
+          <Card className="shadow-md overflow-hidden">
+            <CardHeader className="bg-primary-foreground  border-b border-primary/20">
+              <CardTitle className="font-mono font-black tracking-tight text-lg">Adherence Distribution</CardTitle>
+              <CardDescription>
+                Subjects above vs. below threshold
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="pt-6">
+              <ResponsiveContainer width="100%" height={300}>
+                <PieChart>
+                  <Pie
+                    data={pieData}
+                    dataKey="value"
+                    nameKey="name"
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={60}
+                    outerRadius={100}
+                    stroke="#fff"
+                    strokeWidth={2}
+                    label={({ percent }) => ` ${(percent * 100).toFixed(0)}%`}
+                  >
+                    {pieData.map((entry, index) => (
+                      <Cell key={index} fill={COLORS[index % COLORS.length]} />
+                    ))}
+                  </Pie>
+                  <Tooltip
+                    formatter={(percent) =>
+                      ` ${((percent / subjects.length) * 100).toFixed(0)}%`
+                    }
+                  />
+                  <Legend />
+                  <text
+                    x="50%"
+                    y="45%"
+                    textAnchor="middle"
+                    fill={"#000"}
+                    fontSize="1.5rem"
+                    fontWeight="bold"
+                  >
+                    {totalSubjects}
+                  </text>
+                  <text
+                    x="50%"
+                    y="55%"
+                    textAnchor="middle"
+                    fill={"#64748b"}
+                    fontSize="0.8rem"
+                  >
+                    Total
+                  </text>
+                </PieChart>
+              </ResponsiveContainer>
+            </CardContent>
+            <CardFooter className="bg-primary-foreground  border-t border-primary/20 px-4 py-3">
+              <div className="flex items-center text-xs text-muted-foreground  w-full">
+                <InfoIcon className="h-4 w-4 mr-2 flex-shrink-0" />
+                <span>
+                  Threshold is defined as an adherence score of 7 or higher
+                </span>
+              </div>
+            </CardFooter>
+          </Card>
+
+          {/* Age Group Bar Chart */}
+          <Card className="shadow-md overflow-hidden border-primary/20 ">
+            <CardHeader className="bg-primary-foreground  border-b border-primary/20 ">
+              <CardTitle className="font-mono font-black tracking-tight text-lg">
+                Age & Gender Distribution
+              </CardTitle>
+              <CardDescription>
+                Subjects with low adherence by demographics
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="pt-6">
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart
+                  data={groupedData}
+                  margin={{ top: 20, right: 30, left: 10, bottom: 5 }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+                  <XAxis
+                    label={{
+                      value: "Age Group",
+                      position: "insideBottom",
+                    }}
+                    dataKey="age_group"
+                    tick={{
+                      fill: "#64748b",
+                    }}
+                  />
+                  <YAxis
+                    label={{
+                      value: "Count",
+                      angle: -90,
+                      position: "insideLeft",
+                      style: {
+                        fill: "#64748b",
+                      },
+                    }}
+                    tick={{
+                      fill: "#64748b",
+                    }}
+                  />
+                  <Tooltip
+                    formatter={(value) => `${value}`}
+                    labelFormatter={(value) => `Age Group: ${value}`}
+                    contentStyle={{
+                      backgroundColor: "#fff",
+                      border: `1px solid ${"#e2e8f0"}`,
+                      borderRadius: "6px",
+                    }}
+                  />
+                  <Legend />
+                  <Bar
+                    dataKey="F"
+                    fill="hsl(var(--chart-1))"
+                    name="Female"
+                    radius={[4, 4, 0, 0]}
+                  />
+                  <Bar
+                    dataKey="M"
+                    fill="hsl(var(--chart-2))"
+                    name="Male"
+                    radius={[4, 4, 0, 0]}
+                  />
+                </BarChart>
+              </ResponsiveContainer>
+            </CardContent>
+            <CardFooter className="bg-primary-foreground  border-t border-primary/20  px-4 py-3">
+              <div className="flex items-center text-xs text-muted-foreground  w-full">
+                <InfoIcon className="h-4 w-4 mr-2 flex-shrink-0" />
+                <span>
+                  Only includes subjects with adherence scores below 7
+                </span>
+              </div>
+            </CardFooter>
+          </Card>
+
+          {/* Line Chart for Adherence Scores */}
+          <Card className="shadow-md overflow-hidden border-primary/20 ">
+            <CardHeader className="bg-primary-foreground  border-b border-primary/20 ">
+              <CardTitle className="font-mono font-black tracking-tight text-lg">Low Adherence Subjects</CardTitle>
+              <CardDescription>
+                Individual adherence scores of lowest 10 subjects
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="pt-6">
+              <ResponsiveContainer width="100%" height={300}>
+                <LineChart
+                  data={lineData}
+                  margin={{ top: 20, right: 10, left: 10, bottom: 0 }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+                  <XAxis
+                    dataKey="name"
+                    angle={-45}
+                    textAnchor="end"
+                    interval={0}
+                    height={60}
+                    tick={{
+                      fontSize: 13,
+                      fill: "#64748b",
+                    }}
+                  />
+                  <YAxis
+                    domain={[0, 7]}
+                    ticks={[0, 1, 2, 3, 4, 5, 6, 7]}
+                    label={{
+                      value: "Adherence Score",
+                      angle: -90,
+                      position: "center",
+                      style: {
+                        fill: "#64748b",
+                      },
+                    }}
+                    tick={{
+                      fill: "#64748b",
+                    }}
+                  />
+                  <Tooltip
+                    formatter={(value) => `${value.toFixed(1)}`}
+                    labelFormatter={(subject) => `Subject ID: ${subject}`}
+                    contentStyle={{
+                      backgroundColor: "#fff",
+                      border: `1px solid ${"#e2e8f0"}`,
+                      borderRadius: "6px",
+                    }}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="adherenceScore"
+                    stroke="hsl(var(--chart-1))"
+                    strokeWidth={2}
+                    dot={{ fill: "#fff", r: 4 }}
+                    activeDot={{ r: 6, fill: "hsl(var(--chart-1))" }}
+                  />
+                  {/* Threshold line */}
+                  <Line
+                    type="monotone"
+                    dataKey={() => 7}
+                    stroke="hsl(var(--chart-2))"
+                    strokeWidth={1.5}
+                    strokeDasharray="5 5"
+                    dot={false}
+                    name="Threshold"
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            </CardContent>
+            <CardFooter className="bg-primary-foreground  border-t border-primary/20  px-4 py-3">
+              <div className="flex items-center text-xs text-muted-foreground  w-full">
+                <InfoIcon className="h-4 w-4 mr-2 flex-shrink-0" />
+                <span>
+                  Red dashed line indicates the adherence threshold (7.0)
+                </span>
+              </div>
+            </CardFooter>
+          </Card>
+        </div>
       </div>
     </section>
   );

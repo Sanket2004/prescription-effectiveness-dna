@@ -5,8 +5,8 @@ export default {
   theme: {
   	extend: {
   		fontFamily: {
-  			sans: ["Geist", "sans-serif"],
-  			mono: ["Geist Mono", "monospace"]
+  			sans: ["Inter", "sans-serif"],
+  			mono: ["JetBrains Mono", "monospace"]
   		},
   		borderRadius: {
   			lg: 'var(--radius)',
