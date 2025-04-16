@@ -155,7 +155,7 @@ function HomePage() {
     <section className="container p-6 space-y-10 mx-auto">
       {/* Header Section */}
       <div className="px-4 py-8 bg-gradient-to-b from-background to-muted/30 rounded-2xl shadow-sm">
-        <h1 className="text-4xl font-black tracking-tight mb-6 text-center max-w-screen-lg mx-auto font-mono">
+        <h1 className="text-4xl font-black tracking-tight mb-6 text-center max-w-screen-lg mx-auto font-mono text-primary">
           Prescription Effectiveness Dashboard
         </h1>
 
@@ -182,9 +182,8 @@ function HomePage() {
                   target="_blank"
                 >
                   <LinkIcon size={14} className="mr-1.5" />
-                  <span className="font-medium text-sm font-mono tracking-tight">{member.name}</span>
-                  <span className="ml-1.5 text-xs text-primary font-mono font-black tracking-tight">
-                    {member.role === "Project Manager" ? "PM" : ""}
+                  <span className="font-medium text-sm font-mono tracking-tight">
+                    {member.name}
                   </span>
                 </Link>
               ))}
@@ -204,7 +203,7 @@ function HomePage() {
 
       {/* Summary Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card className="bg-gradient-to-br from-white to-primary-foreground shadow-md">
+        <Card className="bg-gradient-to-br from-white to-primary-foreground/ shadow-md">
           <CardHeader className="pb-2">
             <CardTitle className="flex items-center text-primary ">
               <Users className="mr-2 h-5 w-5" />
@@ -221,7 +220,7 @@ function HomePage() {
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-white to-primary-foreground  shadow-md">
+        <Card className="bg-gradient-to-br from-white to-primary-foreground/  shadow-md">
           <CardHeader className="pb-2">
             <CardTitle className="flex items-center text-primary ">
               <TrendingDown className="mr-2 h-5 w-5" />
@@ -238,7 +237,7 @@ function HomePage() {
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-white to-primary-foreground   shadow-md">
+        <Card className="bg-gradient-to-br from-white to-primary-foreground/   shadow-md">
           <CardHeader className="pb-2">
             <CardTitle className="flex items-center text-primary ">
               <Activity className="mr-2 h-5 w-5" />
@@ -246,9 +245,7 @@ function HomePage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-4xl font-bold font-mono">
-              {adherenceRate}%
-            </div>
+            <div className="text-4xl font-bold font-mono">{adherenceRate}%</div>
             <p className="text-sm text-muted-foreground  mt-1">
               Subjects meeting adherence threshold
             </p>
@@ -264,8 +261,10 @@ function HomePage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-12">
           {/* Pie Chart Card */}
           <Card className="shadow-md overflow-hidden">
-            <CardHeader className="bg-primary-foreground  border-b border-primary/20">
-              <CardTitle className="font-mono font-black tracking-tight text-lg">Adherence Distribution</CardTitle>
+            <CardHeader className="bg-primary-foreground/30  border-b border-primary/20">
+              <CardTitle className="font-mono font-black tracking-tight text-lg">
+                Adherence Distribution
+              </CardTitle>
               <CardDescription>
                 Subjects above vs. below threshold
               </CardDescription>
@@ -283,6 +282,7 @@ function HomePage() {
                     outerRadius={100}
                     stroke="#fff"
                     strokeWidth={2}
+                    fontSize={12}
                     label={({ percent }) => ` ${(percent * 100).toFixed(0)}%`}
                   >
                     {pieData.map((entry, index) => (
@@ -293,6 +293,7 @@ function HomePage() {
                     formatter={(percent) =>
                       ` ${((percent / subjects.length) * 100).toFixed(0)}%`
                     }
+                    contentStyle={{ fontSize: 12 }}
                   />
                   <Legend />
                   <text
@@ -307,17 +308,17 @@ function HomePage() {
                   </text>
                   <text
                     x="50%"
-                    y="55%"
+                    y="52%"
                     textAnchor="middle"
                     fill={"#64748b"}
-                    fontSize="0.8rem"
+                    fontSize="0.9rem"
                   >
                     Total
                   </text>
                 </PieChart>
               </ResponsiveContainer>
             </CardContent>
-            <CardFooter className="bg-primary-foreground  border-t border-primary/20 px-4 py-3">
+            <CardFooter className="bg-primary-foreground/30  border-t border-primary/20 px-4 py-3">
               <div className="flex items-center text-xs text-muted-foreground  w-full">
                 <InfoIcon className="h-4 w-4 mr-2 flex-shrink-0" />
                 <span>
@@ -329,7 +330,7 @@ function HomePage() {
 
           {/* Age Group Bar Chart */}
           <Card className="shadow-md overflow-hidden border-primary/20 ">
-            <CardHeader className="bg-primary-foreground  border-b border-primary/20 ">
+            <CardHeader className="bg-primary-foreground/30  border-b border-primary/20 ">
               <CardTitle className="font-mono font-black tracking-tight text-lg">
                 Age & Gender Distribution
               </CardTitle>
@@ -345,24 +346,23 @@ function HomePage() {
                 >
                   <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
                   <XAxis
-                    label={{
-                      value: "Age Group",
-                      position: "insideBottom",
-                    }}
                     dataKey="age_group"
                     tick={{
                       fill: "#64748b",
                     }}
+                    fontSize={12}
                   />
                   <YAxis
                     label={{
-                      value: "Count",
+                      value: "Subject Count",
                       angle: -90,
                       position: "insideLeft",
                       style: {
                         fill: "#64748b",
                       },
+                      fontSize: 12,
                     }}
+                    fontSize={12}
                     tick={{
                       fill: "#64748b",
                     }}
@@ -374,9 +374,10 @@ function HomePage() {
                       backgroundColor: "#fff",
                       border: `1px solid ${"#e2e8f0"}`,
                       borderRadius: "6px",
+                      fontSize: 12,
                     }}
                   />
-                  <Legend />
+                  <Legend align="center" iconType="circle"/>
                   <Bar
                     dataKey="F"
                     fill="hsl(var(--chart-1))"
@@ -392,7 +393,7 @@ function HomePage() {
                 </BarChart>
               </ResponsiveContainer>
             </CardContent>
-            <CardFooter className="bg-primary-foreground  border-t border-primary/20  px-4 py-3">
+            <CardFooter className="bg-primary-foreground/30  border-t border-primary/20  px-4 py-3">
               <div className="flex items-center text-xs text-muted-foreground  w-full">
                 <InfoIcon className="h-4 w-4 mr-2 flex-shrink-0" />
                 <span>
@@ -404,8 +405,10 @@ function HomePage() {
 
           {/* Line Chart for Adherence Scores */}
           <Card className="shadow-md overflow-hidden border-primary/20 ">
-            <CardHeader className="bg-primary-foreground  border-b border-primary/20 ">
-              <CardTitle className="font-mono font-black tracking-tight text-lg">Low Adherence Subjects</CardTitle>
+            <CardHeader className="bg-primary-foreground/30  border-b border-primary/20 ">
+              <CardTitle className="font-mono font-black tracking-tight text-lg">
+                Low Adherence Subjects
+              </CardTitle>
               <CardDescription>
                 Individual adherence scores of lowest 10 subjects
               </CardDescription>
@@ -423,21 +426,23 @@ function HomePage() {
                     textAnchor="end"
                     interval={0}
                     height={60}
+                    fontSize={12}
                     tick={{
-                      fontSize: 13,
                       fill: "#64748b",
                     }}
                   />
                   <YAxis
                     domain={[0, 7]}
                     ticks={[0, 1, 2, 3, 4, 5, 6, 7]}
+                    fontSize={12}
                     label={{
                       value: "Adherence Score",
                       angle: -90,
-                      position: "center",
+                      position: "insideLeft",
                       style: {
                         fill: "#64748b",
                       },
+                      fontSize: 12,
                     }}
                     tick={{
                       fill: "#64748b",
@@ -450,6 +455,7 @@ function HomePage() {
                       backgroundColor: "#fff",
                       border: `1px solid ${"#e2e8f0"}`,
                       borderRadius: "6px",
+                      fontSize: 12,
                     }}
                   />
                   <Line
@@ -473,7 +479,7 @@ function HomePage() {
                 </LineChart>
               </ResponsiveContainer>
             </CardContent>
-            <CardFooter className="bg-primary-foreground  border-t border-primary/20  px-4 py-3">
+            <CardFooter className="bg-primary-foreground/30  border-t border-primary/20  px-4 py-3">
               <div className="flex items-center text-xs text-muted-foreground  w-full">
                 <InfoIcon className="h-4 w-4 mr-2 flex-shrink-0" />
                 <span>
