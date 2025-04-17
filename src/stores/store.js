@@ -8,8 +8,29 @@ const useStore = create((set) => ({
   subjectData: {},
   lowAdherenceSummary: [],
   belowThresholdSubjects: [],
+  recentCriticalSubjects: [],
+  selectedDays: 7,
+  setSelectedDays: (date) => set({ selectedDays: date }),
   loading: false,
   error: null,
+
+  // Fetch recent critical subjects and set them in the store
+  fetchRecentCriticalSubjects: async (days) => {
+    try {
+      set({ loading: true });
+      const response = await axios.get(
+        `${API_URL}/recent-critical-subjects?days=${days}`
+      );
+      set({ recentCriticalSubjects: response.data || [] });
+    } catch (error) {
+      console.error("Fetch recent critical subjects error:", error);
+      set({
+        error: "Failed to fetch recent critical subjects",
+      });
+    } finally {
+      set({ loading: false });
+    }
+  },
 
   // Fetch subjects and set them in the store
   fetchSubjects: async () => {

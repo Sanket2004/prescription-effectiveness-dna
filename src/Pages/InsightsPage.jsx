@@ -120,6 +120,7 @@ export default function InsightsPage() {
     assessment_date: new Date(assessment.assessment_date).toLocaleDateString(
       "en-US",
       {
+        year: "numeric",
         month: "short",
         day: "numeric",
       }

@@ -36,6 +36,7 @@ import { Link } from "react-router-dom";
 import SubjectSelect from "../components/global/subjectSelect";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Separator } from "@/components/ui/separator";
+import CriticalSubjects from "../components/global/criticalSubjects";
 
 function HomePage() {
   const {
@@ -47,13 +48,16 @@ function HomePage() {
     fetchSubjectsBelowThreshold,
     fetchLowAdherenceSummary,
     lowAdherenceSummary,
+    fetchRecentCriticalSubjects,
+    selectedDays,
   } = useStore();
 
   useEffect(() => {
     fetchSubjects();
     fetchSubjectsBelowThreshold();
     fetchLowAdherenceSummary();
-  }, [fetchSubjects, fetchSubjectsBelowThreshold, fetchLowAdherenceSummary]);
+    fetchRecentCriticalSubjects(selectedDays);
+  }, [fetchSubjects, fetchSubjectsBelowThreshold, fetchLowAdherenceSummary, selectedDays, fetchRecentCriticalSubjects]);
 
   if (loading) {
     return (
@@ -117,7 +121,7 @@ function HomePage() {
   }));
 
   // Colors for Pie Chart
-  const COLORS = ["hsl(var(--chart-1))", "hsl(var(--chart-2))"];
+  const COLORS = ["hsl(var(--chart-1))", "hsl(var(--primary))"];
 
   // Data for team members
   const teamMembers = [
@@ -191,6 +195,12 @@ function HomePage() {
           </div>
 
           <Separator />
+
+
+          <CriticalSubjects />
+
+          <Separator />
+
 
           <div className="pb-2">
             <h3 className="text-center font-bold text-primary mb-3 font-mono tracking-tight">
@@ -377,7 +387,7 @@ function HomePage() {
                       fontSize: 12,
                     }}
                   />
-                  <Legend align="center" iconType="circle"/>
+                  <Legend align="center" iconType="circle" />
                   <Bar
                     dataKey="F"
                     fill="hsl(var(--chart-1))"
@@ -386,7 +396,7 @@ function HomePage() {
                   />
                   <Bar
                     dataKey="M"
-                    fill="hsl(var(--chart-2))"
+                    fill="hsl(var(--primary))"
                     name="Male"
                     radius={[4, 4, 0, 0]}
                   />
@@ -470,7 +480,7 @@ function HomePage() {
                   <Line
                     type="monotone"
                     dataKey={() => 7}
-                    stroke="hsl(var(--chart-2))"
+                    stroke="hsl(var(--primary))"
                     strokeWidth={1.5}
                     strokeDasharray="5 5"
                     dot={false}
