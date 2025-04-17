@@ -69,6 +69,10 @@ function HomePage() {
           <Skeleton className="h-10 w-64 mx-auto" />
         </div>
 
+        <div className="max-w-4xl pb-14 mx-auto">
+        <Skeleton className="h-52 w-2/3 mx-auto" />
+        </div>
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {[1, 2, 3].map((i) => (
             <Card key={i} className="overflow-hidden">

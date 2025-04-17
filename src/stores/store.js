@@ -9,7 +9,7 @@ const useStore = create((set) => ({
   lowAdherenceSummary: [],
   belowThresholdSubjects: [],
   recentCriticalSubjects: [],
-  selectedDays: 7,
+  selectedDays: 30,
   setSelectedDays: (date) => set({ selectedDays: date }),
   loading: false,
   error: null,
